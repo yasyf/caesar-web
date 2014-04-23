@@ -24,12 +24,20 @@ chunks = (Chunk.objects
 
 #######################################################################################
 
+review_milestone = ReviewMilestone.objects.get(id=3)
+c = (Chunk.objects.filter(file__submission__milestone=review_milestone.submit_milestone)
+			  .exclude(student_lines__lt=review_milestone.min_student_lines)
+	    	  .exclude(name__in=list_chunks_to_exclude(review_milestone))
+	    	  .select_related('id','file__submission__id','file__submission__authors'))
+
 Chunk.objects.filter(file__submission__milestone=review_milestone.submit_milestone)
 Chunk.objects.raw('''
 	SELECT * FROM `chunks` 
 	INNER JOIN `files` ON (`chunks`.`file_id` = `files`.`id`) 
 	INNER JOIN `submissions` ON (`files`.`submission_id` = `submissions`.`id`) 
 	WHERE `submissions`.`milestone_id` = %s''',[review_milestone.submit_milestone])
+
+Chunk.objects.exclude(student_lines__lt=review_milestone.min_student_lines)
 
 
 Chunk.objects.raw('''SELECT * FROM `chunks` join files on chunks.file_id=files.id ''')
