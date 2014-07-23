@@ -24,12 +24,15 @@ def assign_tasks(review_milestone, reviewer, tasks_to_assign=None, simulate=Fals
 	if tasks_to_assign==None:
 		tasks_to_assign = num_tasks_for_user(review_milestone, reviewer)
 	# get the chunks for the milestone
+	f = File.objects.filter(submission__milestone=review_milestone.submit_milestone,submission__authors__contains=r)
 	chunks = (Chunk.objects
 			.filter(file__submission__milestone=review_milestone.submit_milestone)
 	    	# remove chunks that have too few student-generated lines
 			.exclude(student_lines__lt=review_milestone.min_student_lines)
 			# remove chunks that aren't selected for review
 	    	.exclude(name__in=list_chunks_to_exclude(review_milestone))
+			# remove chunks that the reviewer authored
+			.exclude(file__in=f)
 	    	# .values('id', 'name', 'cluster_id', 'file__submission', 'class_type', 'student_lines')\
 	    	.select_related('id','file__submission__id','file__submission__authors'))
 
@@ -44,7 +47,8 @@ def assign_tasks(review_milestone, reviewer, tasks_to_assign=None, simulate=Fals
 		chunks = chunks.annotate(num_tasks=len(chunk_id_task_map['id'])).exclude(num_tasks__gte=num_tasks_for_user(review_milestone, r))
 
 	# remove chunks that the reviewer authored
-	chunks_to_choose_from = [c for c in chunks if r not in c.file.submission.authors.filter()]
+	# chunks_to_choose_from = [c for c in chunks if r not in c.file.submission.authors.filter()]
+	chunks_to_choose_from = chunks
 	# randomly order the chunks
 	random.shuffle(chunks_to_choose_from)
 	# take the first num_tasks_for_user chunks

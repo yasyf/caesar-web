@@ -103,6 +103,10 @@ Chunk.objects.extra(select={"DISTINCT *":"chunks"}, where=["submissions.mileston
 
 
 # what if I preform a query on File (f) and then exclude all c.files that are/aren't in f?
-f = File.objects.filter(submission__milestone=review_milestone.submit_milestone,submission__authors=r)
+f = File.objects.filter(submission__milestone=review_milestone.submit_milestone,submission__authors__contains=r)
+c.objects.exclude(file__in=f)
+
+
+
 
 
