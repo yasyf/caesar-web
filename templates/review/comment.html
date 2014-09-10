@@ -1,8 +1,8 @@
 {% load extra_tags %}
-<div id="comment-{{ comment.id }}-{{ comment.start }}-{{ comment.end }}-{{ chunk.id }}-{{ file.id }}" 
-  class="comment 
+<div id="comment-{{ comment.id }}-{{ comment.start }}-{{ comment.end }}-{{ chunk.id }}-{{ file.id }}"
+  class="comment
          {% if comment.is_reply %}
-           comment-reply 
+           comment-reply
            parent-{{ comment.parent_id }}
          {% endif %}
          {% if comment.type != 'U' %}comment-auto{% endif %}
@@ -28,7 +28,7 @@
     {% if comment.type == 'U' %}
     {{comment.created|timesince_human}} ago {% if comment.is_edited %} * {% endif %}
     {% else %}
-    automatically generated 
+    automatically generated
     {% endif %}
     {% if not comment.deleted %}
     by <span class="comment-author-name
@@ -45,14 +45,14 @@
     {% endif %}
     {% endwith %}
   </div>
-  
+
   {% if activity_view and highlight_comment.id == comment.id %}
   <p id="highlight-comment-text-{{comment.id}}" class="comment-text">
-    {{ comment.text | urlize }}
+    {{ comment.text | safe | urlize }}
   </p>
   {% else %}
   <p id="comment-text-{{comment.id}}" class="comment-text">
-    {%if comment.deleted %}[deleted]{% else %}{{ comment.text | urlize }}{%endif%}
+    {%if comment.deleted %}[deleted]{% else %}{{ comment.text | safe | urlize }}{%endif%}
   </p>
   {% endif %}
   <div class="comment-author">
@@ -85,9 +85,9 @@
       <button id="reply-{{ comment.id }}-button" class="reply-button"
         type="button">Reply</button>
       {% if full_view and comment.author == user %}
-      <button id="delete-{{ comment.id }}-button" class="delete-button" 
+      <button id="delete-{{ comment.id }}-button" class="delete-button"
         type="button">Delete</button>
-     <button id="edit-{{ comment.id }}-button" class="edit-button" 
+     <button id="edit-{{ comment.id }}-button" class="edit-button"
         type="button">Edit</button>
       {% endif %}
       {% endif %}

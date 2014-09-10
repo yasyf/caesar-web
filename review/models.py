@@ -9,7 +9,7 @@ from django.conf import settings
 from accounts.models import UserProfile
 from chunks.models import Chunk, Batch
 
-import sys
+import sys, markdown
 
 class Comment(models.Model):
     TYPE_CHOICES = (
@@ -18,6 +18,7 @@ class Comment(models.Model):
         ('T', 'Test result'),
     )
     text = models.TextField()
+    original_text = models.TextField()
     chunk = models.ForeignKey(Chunk, related_name='comments')
     author = models.ForeignKey(User, related_name='comments')
     start = models.IntegerField() # region start line, inclusive
@@ -43,6 +44,8 @@ class Comment(models.Model):
     def save(self, *args, **kwargs):
         super(Comment, self).save(*args, **kwargs)
         self.thread_id = self.parent_id or self.id
+        self.original_text = self.text
+        self.text = markdown.markdown(self.text, safe_mode='escape')
         super(Comment, self).save(*args, **kwargs)
 
     #returns child and vote counts for child as a tuple
