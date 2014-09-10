@@ -114,7 +114,7 @@ def edit_comment(request):
         start = comment.start
         end = comment.end
         form = EditCommentForm(initial={
-             'text': comment.text,
+             'text': comment.original_text or comment.text,
              'comment_id': comment.id,
         })
         chunk = Chunk.objects.get(pk=comment.chunk.id)
@@ -215,7 +215,7 @@ def all_activity(request, review_milestone_id, username):
     except Member.DoesNotExist:
         if not user.is_staff:
             raise Http404
-    
+
     #get all relevant chunks
     chunks = Chunk.objects \
         .filter(file__submission__milestone= review_milestone.submit_milestone) \

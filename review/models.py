@@ -18,7 +18,7 @@ class Comment(models.Model):
         ('T', 'Test result'),
     )
     text = models.TextField()
-    original_text = models.TextField()
+    original_text = models.TextField(null=True, blank=True)
     chunk = models.ForeignKey(Chunk, related_name='comments')
     author = models.ForeignKey(User, related_name='comments')
     start = models.IntegerField() # region start line, inclusive
